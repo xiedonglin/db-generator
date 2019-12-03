@@ -7,7 +7,7 @@ import java.util.List;
  * 表数据
  * 
  * @author czx
- * @email object_czx@163.com
+ * @email 34412447@qq.com
  * @date 2016年12月20日 上午12:02:55
  */
 public class TableEntity {

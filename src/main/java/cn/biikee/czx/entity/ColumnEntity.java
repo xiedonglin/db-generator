@@ -4,7 +4,7 @@ package cn.biikee.czx.entity;
  * 列的属性
  * 
  * @author czx
- * @email object_czx@163.com
+ * @email 34412447@qq.com
  * @date 2016年12月20日 上午12:01:45
  */
 public class ColumnEntity {

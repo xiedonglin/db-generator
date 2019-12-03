@@ -17,7 +17,7 @@ import cn.biikee.czx.utils.GenPostgresUtils;
  * 代码生成器
  * 
  * @author czx
- * @email object_czx@163.com
+ * @email 34412447@qq.com
  * @date 2016年12月19日 下午3:33:38
  */
 @Service

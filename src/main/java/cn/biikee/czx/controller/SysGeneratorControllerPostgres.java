@@ -25,7 +25,7 @@ import cn.biikee.czx.utils.R;
  * 代码生成器
  * 
  * @author czx
- * @email object_czx@163.com
+ * @email 34412447@qq.com
  * @date 2016年12月19日 下午9:12:58
  */
 @Controller

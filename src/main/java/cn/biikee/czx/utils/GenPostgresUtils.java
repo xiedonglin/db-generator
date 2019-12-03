@@ -31,7 +31,7 @@ import freemarker.template.TemplateException;
  * 代码生成器 工具类
  *
  * @author czx
- * @email object_czx@163.com
+ * @email 34412447@qq.com
  * @date 2016年12月19日 下午11:40:24
  */
 public class GenPostgresUtils {
