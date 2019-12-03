@@ -1,0 +1,33 @@
+# Tomcat
+server:
+    tomcat:
+        max-threads: 10
+        min-spare-threads: 10
+    port: 8888
+
+# mysql
+spring:
+    datasource:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: org.postgresql.Driver
+        url: jdbc:postgresql://172.29.231.76:5432/hochitest01
+        username: postgres
+        password: XXXXX
+    jackson:
+        time-zone: GMT+8
+        date-format: yyyy-MM-dd HH:mm:ss
+    resources:
+            static-locations: classpath:/static/,classpath:/views/
+    freemarker:
+        suffix: .ftl
+        templateEncoding: UTF-8
+        templateLoaderPath: classpath:/templates/
+        content-type: text/html
+
+# Mybatis配置
+mybatis:
+    typeAliasesPackage: cn.biikee.czx.entity
+    mapperLocations: classpath:mapper/**/*.xml
+    configuration:
+        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+

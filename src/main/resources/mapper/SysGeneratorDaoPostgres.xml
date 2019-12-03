@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.biikee.czx.dao.SysGeneratorDaoPostgres">
+
+	<resultMap id="cursorMap" type="java.util.Map">
+	 <result column="tablename"  jdbcType="VARCHAR"  property="tablename" />
+	 <result column="tablecomment"  jdbcType="VARCHAR"  property="tablecomment" />
+	 <result column="keycount"  jdbcType="VARCHAR"  property="keycount" />
+	</resultMap>
+
+
+	<select id="queryList" resultType="map">
+        SELECT 
+        	distinct
+            pg_tables.tablename AS tablename
+            ,coalesce(obj_description(pg_class.oid,'pg_class'),'') as tablecomment 
+            ,case when pg_constraint.conkey is not null then array_length(pg_constraint.conkey, 1) else 0 end keycount
+            ,pg_class.reltuples as rowcount
+        FROM pg_tables
+        inner join pg_class on pg_tables.tablename = pg_class.relname
+        inner join pg_namespace on pg_namespace.oid = pg_class.relnamespace and pg_namespace.nspname = pg_tables.schemaname
+        left join pg_constraint on pg_constraint.conrelid = pg_class.oid and pg_constraint.contype='p'
+        WHERE pg_tables.schemaname = 'public'
+        order by pg_tables.tablename
+	</select>
+	
+	<select id="queryTotal" resultType="int">
+		SELECT 
+            count(*)
+        FROM pg_tables
+        inner join pg_class on pg_tables.tablename = pg_class.relname
+        inner join pg_namespace on pg_namespace.oid = pg_class.relnamespace and pg_namespace.nspname = pg_tables.schemaname
+        left join pg_constraint on pg_constraint.conrelid = pg_class.oid and pg_constraint.contype='p'
+        WHERE pg_tables.schemaname = 'public'
+		
+	</select> 
+	
+	<select id="queryTable" resultMap="cursorMap">
+        SELECT 
+        	distinct
+            pg_tables.tablename AS tablename
+            ,coalesce(obj_description(relfilenode,'pg_class'),'') as tablecomment 
+            ,case when pg_constraint.conkey is not null then array_length(pg_constraint.conkey, 1) else 0 end keycount
+        FROM pg_tables
+        left join pg_class on pg_tables.tablename = pg_class.relname
+        left join pg_constraint on pg_constraint.conrelid = pg_class.oid and pg_constraint.contype='p'
+        WHERE pg_tables.tablename = #{schemas}
+        order by pg_tables.tablename
+	</select> 
+	
+	<select id="queryColumns" resultType="Map">
+	select
+	    coalesce(col_description(a.attrelid, a.attnum),'') as columncomment ,
+	    pg_type.typname as datatype ,
+	    a.attname as columnname ,
+	    a.attnotnull as nullflag,
+		case when array_length(pg_constraint.conkey,1) = 1 and array_length(array_remove(pg_constraint.conkey,a.attnum),1) is null then '1'
+        when array_length(array_remove(pg_constraint.conkey,a.attnum),1) != array_length(pg_constraint.conkey,1) then '1'
+        else '0'
+        end as isKey
+   	from
+	    pg_class as c 
+	inner join pg_namespace on pg_namespace.oid = c.relnamespace and pg_namespace.nspname = 'public'
+	left join pg_attribute as a on a.attrelid = c.oid
+	left join pg_type on pg_type.oid = a.atttypid
+    left join pg_constraint on pg_constraint.conrelid = c.oid and pg_constraint.contype='p'
+	where
+	    c.relname = #{tablename}
+	    and a.atttypid > 0
+	    and a.attnum > 0
+	order by a.attnum
+	</select>
+</mapper>

@@ -1,0 +1,1 @@
+针对postgres生成DB相关的Dao,model,xml
