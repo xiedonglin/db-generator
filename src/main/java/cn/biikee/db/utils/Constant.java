@@ -1,4 +1,4 @@
-package cn.biikee.czx.utils;
+package cn.biikee.db.utils;
 
 /**
  * 常量

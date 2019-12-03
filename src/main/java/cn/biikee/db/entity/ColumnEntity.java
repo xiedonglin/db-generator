@@ -1,4 +1,4 @@
-package cn.biikee.czx.entity;
+package cn.biikee.db.entity;
 
 /**
  * 列的属性

@@ -1,4 +1,4 @@
-package cn.biikee.czx.utils;
+package cn.biikee.db.utils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -20,9 +20,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cn.biikee.czx.config.PostgresConfig;
-import cn.biikee.czx.entity.ColumnEntity;
-import cn.biikee.czx.entity.TableEntity;
+import cn.biikee.db.config.PostgresConfig;
+import cn.biikee.db.entity.ColumnEntity;
+import cn.biikee.db.entity.TableEntity;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;

@@ -1,4 +1,4 @@
-package cn.biikee.czx.service;
+package cn.biikee.db.service;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -9,9 +9,9 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import cn.biikee.czx.config.PostgresConfig;
-import cn.biikee.czx.dao.SysGeneratorDaoPostgres;
-import cn.biikee.czx.utils.GenPostgresUtils;
+import cn.biikee.db.config.PostgresConfig;
+import cn.biikee.db.dao.SysGeneratorDaoPostgres;
+import cn.biikee.db.utils.GenPostgresUtils;
 
 /**
  * 代码生成器

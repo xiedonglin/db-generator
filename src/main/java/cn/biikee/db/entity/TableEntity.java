@@ -1,4 +1,4 @@
-package cn.biikee.czx.entity;
+package cn.biikee.db.entity;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package cn.biikee.czx.config;
+package cn.biikee.db.config;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package cn.biikee.czx.dao;
+package cn.biikee.db.dao;
 
 import java.util.List;
 import java.util.Map;

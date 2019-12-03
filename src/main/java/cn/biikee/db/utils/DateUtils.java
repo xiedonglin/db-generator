@@ -1,4 +1,4 @@
-package cn.biikee.czx.utils;
+package cn.biikee.db.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

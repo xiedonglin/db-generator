@@ -10,9 +10,9 @@ spring:
     datasource:
         type: com.alibaba.druid.pool.DruidDataSource
         driverClassName: org.postgresql.Driver
-        url: jdbc:postgresql://172.29.231.76:5432/hochitest01
+        url: jdbc:postgresql://172.29.231.76:5432/XXXX
         username: postgres
-        password: XXXXX
+        password: XXXX
     jackson:
         time-zone: GMT+8
         date-format: yyyy-MM-dd HH:mm:ss
@@ -26,7 +26,7 @@ spring:
 
 # Mybatis配置
 mybatis:
-    typeAliasesPackage: cn.biikee.czx.entity
+    typeAliasesPackage: cn.biikee.db.entity
     mapperLocations: classpath:mapper/**/*.xml
     configuration:
         log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

@@ -1,4 +1,4 @@
-package cn.biikee.czx.controller;
+package cn.biikee.db.controller;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 
-import cn.biikee.czx.service.SysGeneratorServicePostgres;
-import cn.biikee.czx.utils.PageUtils;
-import cn.biikee.czx.utils.Query;
-import cn.biikee.czx.utils.R;
+import cn.biikee.db.service.SysGeneratorServicePostgres;
+import cn.biikee.db.utils.PageUtils;
+import cn.biikee.db.utils.Query;
+import cn.biikee.db.utils.R;
 
 /**
  * 代码生成器
