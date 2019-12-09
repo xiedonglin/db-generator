@@ -43,7 +43,7 @@
 	</#list>
   </trim>
    <if test="sortorder != null and sortorder != ''">
-    order by <#noparse>${</#noparse>sortorder,jdbcType=VARCHAR<#noparse>}</#noparse>
+    order by <#noparse>${</#noparse>sortorder<#noparse>}</#noparse>
    </if>    
  </select>
 
