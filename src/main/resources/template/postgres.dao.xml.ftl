@@ -42,6 +42,9 @@
     </if>
 	</#list>
   </trim>
+   <if test="sortorder != null and sortorder != ''">
+    order by <#noparse>${</#noparse>sortorder,jdbcType=VARCHAR<#noparse>}</#noparse>
+   </if>    
  </select>
 
  <select id="selectCount" resultType="int" parameterType="${packagename}.model.${moduleName}.${classname}Model">
@@ -58,29 +61,30 @@
  </select>
 
  <insert id="insertSelective" parameterType="${packagename}.model.${moduleName}.${classname}Model" >
+	<#if seqcolumnName?? && seqcolumnName != "">
+		<selectKey keyProperty="${seqcolumnName}" resultType="java.lang.Long" order="AFTER">
+			SELECT currval('${tableName}_${seqcolumnName}_seq')
+		</selectKey>
+ 	</#if>
     insert into ${tableName}
   <trim prefix="(" suffix=")" suffixOverrides="," >
   	<#list columns as column>
+	<#if seqcolumnName != column.columnName>
   	<if test="${column.columnName} != null" >
   		${column.columnName},
     </if>
+    </#if>
 	</#list>  
    </trim>
    <trim prefix="values (" suffix=")" suffixOverrides="," >
   	<#list columns as column>
+	<#if seqcolumnName != column.columnName>
   	<if test="${column.columnName} != null" >
   		<#noparse>#{</#noparse>${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse>,
     </if>
+    </#if>
 	</#list>	 	 
    </trim>
-   <if test="sortfields != null and sortfields != ''">
-    <foreach collection="sortfields" item="sortfield" open="order by " separator="," close=" ">
-     <#noparse>#{</#noparse>sortfield<#noparse>}</#noparse>
-    </foreach>
-   </if>
-   <if test="sortorder != null and sortorder != ''">
-    <#noparse>#{</#noparse>sortorder<#noparse>}</#noparse>
-   </if>    
  </insert>
  <update id="updateByPrimaryKeySelective" parameterType="${packagename}.model.${moduleName}.${classname}Model" >
     update ${tableName}

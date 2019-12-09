@@ -1,6 +1,7 @@
 package cn.biikee.db.service;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipOutputStream;
@@ -54,7 +55,14 @@ public class SysGeneratorServicePostgres {
 			for (Map<String, String> table : tables) {
 				// 查询列信息
 				List<Map<String, String>> columns = queryColumns(table.get("tablename"));
-				gen.generatorPostgres(table, columns,cfg);
+				Map<String, String> params = new HashMap<String,String>();
+				params.put("tablename", table.get("tablename"));
+				List<Map<String, String>> seqcolName = sysGeneratorDao.getSeqs(params);
+				String seqcolumnname = "";
+				if (!seqcolName.isEmpty()) {
+				    seqcolumnname = seqcolName.get(0).get("seqcolumnname");
+				}
+				gen.generatorPostgres(table, columns,cfg,seqcolumnname);
 			}
 		}
 		IOUtils.closeQuietly(zip);

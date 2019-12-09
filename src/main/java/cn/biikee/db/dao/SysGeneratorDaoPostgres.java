@@ -18,4 +18,6 @@ public interface SysGeneratorDaoPostgres {
 	List<Map<String, String>> queryTable(String schema);
 	
 	List<Map<String, String>> queryColumns(String tablename);
+
+	List<Map<String, String>> getSeqs(Map<String, String> map);
 }

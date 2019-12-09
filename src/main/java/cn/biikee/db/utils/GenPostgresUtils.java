@@ -48,7 +48,7 @@ public class GenPostgresUtils {
         return templates;
     }
 
-    public void generatorPostgres(Map<String, String> table, List<Map<String, String>> columns,PostgresConfig cfg) {
+    public void generatorPostgres(Map<String, String> table, List<Map<String, String>> columns,PostgresConfig cfg,String seqcolName) {
         config = cfg;
         // 表的列名(不包含主键)
         List<ColumnEntity> tablecolumns = new ArrayList<ColumnEntity>();
@@ -93,7 +93,8 @@ public class GenPostgresUtils {
         map.put("columns", tablecolumns);
         map.put("keycolumns", tablekeycolumns);
         map.put("packagename", config.getPackagename());
-
+        map.put("seqcolumnName",seqcolName);
+        
         // 内容 与 匹配规则 的测试
         Matcher matcher = pattern.matcher(table.get("tablename"));
         if (matcher.find()) {

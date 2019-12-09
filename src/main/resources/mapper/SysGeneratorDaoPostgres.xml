@@ -70,4 +70,12 @@
 	    and a.attnum > 0
 	order by a.attnum
 	</select>
+	
+	<select id="getSeqs" resultType="Map">
+	SELECT split_part(pg_class.relname ,'_', 4) as seqcolumnName
+	FROM pg_class 
+	inner join pg_namespace on pg_namespace.oid = pg_class.relnamespace and pg_namespace.nspname = 'public'
+	WHERE pg_class.relkind = 'S'
+	and strpos(pg_class.relname,#{tablename,jdbcType=VARCHAR}) > 0
+	</select>
 </mapper>
