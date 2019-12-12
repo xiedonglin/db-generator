@@ -9,5 +9,6 @@ package cn.biikee.db.utils;
  */
 public class Constant {
 
+    public static final String UTF8 = "UTF-8";
 
 }
