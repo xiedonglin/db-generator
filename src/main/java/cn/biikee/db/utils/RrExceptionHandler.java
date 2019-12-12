@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
  * @date 2016年10月27日 下午10:16:19
  */
 @Component
-public class RRExceptionHandler implements HandlerExceptionResolver {
+public class RrExceptionHandler implements HandlerExceptionResolver {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Override
@@ -31,9 +31,9 @@ public class RRExceptionHandler implements HandlerExceptionResolver {
 		try {
 			response.setContentType("application/json;charset=utf-8");
 			response.setCharacterEncoding("utf-8");
-			if (ex instanceof RRException) {
-				r.put("code", ((RRException) ex).getCode());
-				r.put("msg", ((RRException) ex).getMessage());
+			if (ex instanceof RrException) {
+				r.put("code", ((RrException) ex).getCode());
+				r.put("msg", ((RrException) ex).getMessage());
             }else if(ex instanceof ClientAbortException){
                 r = R.error("网页断开连接");
 			}else if(ex instanceof DuplicateKeyException){

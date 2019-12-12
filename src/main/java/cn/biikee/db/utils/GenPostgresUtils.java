@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 
@@ -34,15 +33,14 @@ import freemarker.template.Version;
  * @date 2016年12月19日 下午11:40:24
  */
 public class GenPostgresUtils {
-    // 匹配规则
     private Pattern pattern = Pattern.compile("(.*?)_.");
     private PostgresConfig config;
 
     public List<String> getTemplates() {
         List<String> templates = new ArrayList<>();
-        templates.add("postgres.dao.xml.ftl");
-        templates.add("postgres.model.java.ftl");
-        templates.add("postgres.dao.java.ftl");
+        templates.add(Constant.POSTGRES_XML);
+        templates.add(Constant.POSTGRES_MOD);
+        templates.add(Constant.POSTGRES_DAO);
 
         return templates;
     }
@@ -105,13 +103,9 @@ public class GenPostgresUtils {
         map.put("datetime", DateUtils.format(new Date(), DateUtils.DATE_TIME_PATTERN));
         try {
             // 创建配置实例
-//            Configuration configuration = new Configuration();
             Configuration configuration = new Configuration(new Version("2.3.26"));
-            
-            
             // 设置编码
             configuration.setDefaultEncoding("UTF-8");
-
             // ftl模板文件
             configuration.setClassForTemplateLoading(GenPostgresUtils.class, "/template/");
 
@@ -156,7 +150,8 @@ public class GenPostgresUtils {
      */
     public String classToJava(String className) {
         String classnm = "";
-        Matcher m = Pattern.compile("[a-z]*[^_]").matcher(className);
+        String rex = "[a-z]*[^_]";
+        Matcher m = Pattern.compile(rex).matcher(className);
         if (m.matches()) {
             if (m.groupCount() == 3) {
                 classnm = classnm + WordUtils.capitalizeFully(m.group(1), new char[] {'_'}) + "_";
@@ -207,21 +202,17 @@ public class GenPostgresUtils {
             packagePath += packageName.replace(".", File.separator) + File.separator;
         }
 
-        if (template.contains("postgres.model.java.ftl")) {
+        if (template.contains(Constant.POSTGRES_MOD)) {
             return packagePath + "model" + File.separator + moduleName + File.separator + className + "Model.java";
         }
 
-        if (template.contains("postgres.dao.java.ftl")) {
+        if (template.contains(Constant.POSTGRES_DAO)) {
             return packagePath + "dao" + File.separator + moduleName + File.separator + className + "Dao.java";
         }
 
-        if (template.contains("postgres.dao.xml.ftl")) {
+        if (template.contains(Constant.POSTGRES_XML)) {
             return config.getSrcPath() + File.separator + "main" + File.separator + "resources" + File.separator + "sql"
                 + File.separator + "common" + File.separator + moduleName + File.separator + className + "Dao.xml";
-        }
-
-        if (template.contains("menu.sql.vm")) {
-            return className.toLowerCase() + "_menu.sql";
         }
 
         return null;
