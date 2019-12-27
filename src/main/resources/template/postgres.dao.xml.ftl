@@ -132,36 +132,37 @@
     </delete>	 	 	 	 	 
 	 	 	 	 
     <insert id="insertBatchSelective" parameterType="java.util.List" useGeneratedKeys="false">
+    <foreach collection="list" item="item" index="index" separator=";">
     INSERT INTO ${tableName}
     <trim prefix="(" suffix=")" suffixOverrides=",">
 	<#list columns as column>
+		<#if seqcolumnName != column.columnName >
 		${column.attrname},
-	</#list>  
-   </trim>
-   <foreach collection="list" item="item" index="index" separator="union all">
-    (
-    SELECT 
-    <trim prefix="" suffix="" suffixOverrides=",">
-	<#list columns as column>
-    <#noparse>#{</#noparse>item.${column.columnName},jdbcType=${column.jdbcType}<#noparse>},</#noparse>
+	    </#if>
 	</#list>  
     </trim>
-    FROM DUAL
-    )
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+	<#list columns as column>
+		<#if seqcolumnName != column.columnName >
+            <#noparse>#{</#noparse>item.${column.columnName},jdbcType=${column.jdbcType}<#noparse>},</#noparse>
+	    </#if>
+	</#list>  
+    </trim>
     </foreach> 
     </insert>
 
     <update id="updateBatchByPrimaryKeySelective" parameterType="java.util.List">
-    BEGIN
     <foreach collection="list" item="item" index="index" open="" close="" separator=";">
     UPDATE ${tableName}
     <set>
   	<#list columns as column>
   	<if test="item.${column.columnName} != null">
-  		<#if column.columnName == 'ihaitacounter'>
-	  		${column.columnName} = <#noparse>#{</#noparse>item.${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse> + 1,
-  		<#else>
-	  		${column.columnName} = <#noparse>#{</#noparse>item.${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse>,
+		<#if seqcolumnName != column.columnName >
+	  		<#if column.columnName == 'ihaitacounter'>
+		  		${column.columnName} = <#noparse>#{</#noparse>item.${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse> + 1,
+	  		<#else>
+		  		${column.columnName} = <#noparse>#{</#noparse>item.${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse>,
+	  		</#if>
   		</#if>
     </if>
 	</#list>       	 	 	 	 	 	 	 	 	 	 	 	  	 	 	 	 	 	 	 	 	 	 	 	  	 	 	 	 	 	 	 	 	 	 	 	  	 	 	 	 	 	 	 	 	 	 	 	 
@@ -170,11 +171,10 @@
 	<#list keycolumns as column>
         <#if column_index != 0 >and </#if>${column.columnName} = <#noparse>#{</#noparse>item.${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse>
 	</#list>
-    <if test="ihaitacounter != null and ihaitacounter != ''">
+    <if test="item.ihaitacounter != null and item.ihaitacounter != ''">
         AND ihaitacounter = <#noparse>#{</#noparse>item.ihaitacounter,jdbcType=DECIMAL<#noparse>}</#noparse> 
     </if>
     </foreach>
-    ;end;
     </update>
  
     <delete id="deleteBatchByPrimaryKey" parameterType="java.util.List">
