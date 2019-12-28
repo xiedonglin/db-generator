@@ -2,12 +2,11 @@ package cn.biikee.db.utils;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,14 +17,13 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import cn.biikee.db.config.PostgresConfig;
 import cn.biikee.db.entity.ColumnEntity;
-import cn.biikee.db.entity.TableEntity;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import freemarker.template.Version;
 
 /**
  * 代码生成器 工具类
@@ -35,33 +33,33 @@ import freemarker.template.TemplateException;
  * @date 2016年12月19日 下午11:40:24
  */
 public class GenPostgresUtils {
-    // 匹配规则
     private Pattern pattern = Pattern.compile("(.*?)_.");
     private PostgresConfig config;
 
     public List<String> getTemplates() {
-        List<String> templates = new ArrayList<String>();
-        templates.add("postgres.dao.xml.ftl");
-        templates.add("postgres.model.java.ftl");
-        templates.add("postgres.dao.java.ftl");
+        List<String> templates = new ArrayList<>();
+        templates.add(Constant.POSTGRES_XML);
+        templates.add(Constant.POSTGRES_MOD);
+        templates.add(Constant.POSTGRES_DAO);
 
         return templates;
     }
 
-    public void generatorPostgres(Map<String, String> table, List<Map<String, String>> columns,PostgresConfig cfg) {
+    public void generatorPostgres(Map<String, String> table, List<Map<String, String>> columns, PostgresConfig cfg,
+        String seqcolName) {
         config = cfg;
         // 表的列名(不包含主键)
-        List<ColumnEntity> tablecolumns = new ArrayList<ColumnEntity>();
+        List<ColumnEntity> tablecolumns = new ArrayList<>();
 
         // 表的主Key
-        List<ColumnEntity> tablekeycolumns = new ArrayList<ColumnEntity>();
+        List<ColumnEntity> tablekeycolumns = new ArrayList<>();
 
         // 列信息
         for (Map<String, String> column : columns) {
-            System.out.println(column.get("columnname") + ":" + column.get("datatype"));
             if (column.get("datatype").contains("_")) {
                 continue;
             }
+
             ColumnEntity c = new ColumnEntity();
             c.setColumnName(column.get("columnname"));
             c.setDataType(column.get("datatype"));
@@ -71,7 +69,6 @@ public class GenPostgresUtils {
             c.setAttrname(c.getColumnName());
             c.setJavaGetSetName(columnToJava(c.getColumnName()));
             // 列的数据类型，转换成Java类型
-            System.out.println(c.getDataType() + "-----------------" + config.getJavaType().get(c.getDataType()));
             c.setDbType(c.getDataType());
             c.setJdbcType(config.getJdbcType().get(c.getDataType()));
             c.setJavaType(config.getJavaType().get(c.getDataType()));
@@ -86,13 +83,13 @@ public class GenPostgresUtils {
         }
         // 封装模板数据
         Map<String, Object> map = new HashMap<>();
-//        map.put("classname", table.get("tablename").toUpperCase());
-        map.put("classname", UnderlineToHump((table.get("tablename").toUpperCase())));
+        map.put("classname", delUnderline((table.get("tablename").toUpperCase())));
         map.put("tableName", table.get("tablename").toLowerCase());
         map.put("comments", table.get("tablecomment"));
         map.put("columns", tablecolumns);
         map.put("keycolumns", tablekeycolumns);
         map.put("packagename", config.getPackagename());
+        map.put("seqcolumnName", seqcolName);
 
         // 内容 与 匹配规则 的测试
         Matcher matcher = pattern.matcher(table.get("tablename"));
@@ -106,11 +103,9 @@ public class GenPostgresUtils {
         map.put("datetime", DateUtils.format(new Date(), DateUtils.DATE_TIME_PATTERN));
         try {
             // 创建配置实例
-            Configuration configuration = new Configuration();
-
+            Configuration configuration = new Configuration(new Version("2.3.26"));
             // 设置编码
             configuration.setDefaultEncoding("UTF-8");
-
             // ftl模板文件
             configuration.setClassForTemplateLoading(GenPostgresUtils.class, "/template/");
 
@@ -119,8 +114,6 @@ public class GenPostgresUtils {
             for (String str : getTemplates()) {
                 template = configuration.getTemplate(str);
                 // 输出文件
-                System.out.println(getFileName(str, map.get("classname").toString(), config.getPackagename(),
-                    map.get("moduleName").toString()));
                 File outFile = new File(getFileName(str, map.get("classname").toString(), config.getPackagename(),
                     map.get("moduleName").toString()));
                 // 如果输出目标文件夹不存在，则创建
@@ -129,19 +122,20 @@ public class GenPostgresUtils {
                 }
                 // 将模板和数据模型合并生成文件
                 Writer out;
-                out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile), "UTF-8"));
+                out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile), StandardCharsets.UTF_8));
                 // 生成文件
-                template.process(map, out);
+                try {
+                    template.process(map, out);
+                } catch (TemplateException e) {
+                    e.printStackTrace();
+                }
                 // 关闭流
                 out.flush();
                 out.close();
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
-        } catch (TemplateException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
-
     }
 
     /**
@@ -156,35 +150,32 @@ public class GenPostgresUtils {
      */
     public String classToJava(String className) {
         String classnm = "";
-        Pattern pattern = Pattern.compile("[a-z]*[^_]");
-        Matcher m = pattern.matcher(className);
+        String rex = "[a-z]*[^_]";
+        Matcher m = Pattern.compile(rex).matcher(className);
         if (m.matches()) {
             if (m.groupCount() == 3) {
                 classnm = classnm + WordUtils.capitalizeFully(m.group(1), new char[] {'_'}) + "_";
                 classnm = classnm + m.group(2) + "_";
                 classnm = classnm + WordUtils.capitalizeFully(m.group(3), new char[] {'_'}) + "_";
-            }else {
+            } else {
                 classnm = classnm + WordUtils.capitalizeFully(m.group(1), new char[] {'_'}) + "_";
                 classnm = classnm + WordUtils.capitalizeFully(m.group(2), new char[] {'_'}) + "_";
             }
         }
-        // while (m.find()) {
-        // classnm = classnm + WordUtils.capitalizeFully(m.group(), new char[] {'_'}) + "_";
-        // }
-        //CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, "aaa_name")-->aaaName
         return classnm.substring(0, classnm.length() - 1);
     }
-    public String UnderlineToHump(String para){
-        StringBuilder result=new StringBuilder();
-        String a[]=para.split("_");
-        for(String s:a){
+
+    public String delUnderline(String para) {
+        StringBuilder result = new StringBuilder();
+        String[] a = para.split("_");
+        for (String s : a) {
             if (!para.contains("_")) {
                 result.append(s);
                 continue;
             }
-            if(result.length()==0){
+            if (result.length() == 0) {
                 result.append(s.toLowerCase());
-            }else{
+            } else {
                 result.append(s.substring(0, 1).toUpperCase());
                 result.append(s.substring(1).toLowerCase());
             }
@@ -206,28 +197,22 @@ public class GenPostgresUtils {
      * 获取文件名
      */
     public String getFileName(String template, String className, String packageName, String moduleName) {
-        String packagePath = config.getSrcPath() + File.separator + "main" + File.separator
-            + "java" + File.separator;
+        String packagePath = config.getSrcPath() + File.separator + "main" + File.separator + "java" + File.separator;
         if (StringUtils.isNotBlank(packageName)) {
             packagePath += packageName.replace(".", File.separator) + File.separator;
         }
 
-        if (template.contains("postgres.model.java.ftl")) {
+        if (template.contains(Constant.POSTGRES_MOD)) {
             return packagePath + "model" + File.separator + moduleName + File.separator + className + "Model.java";
         }
 
-        if (template.contains("postgres.dao.java.ftl")) {
+        if (template.contains(Constant.POSTGRES_DAO)) {
             return packagePath + "dao" + File.separator + moduleName + File.separator + className + "Dao.java";
         }
 
-        if (template.contains("postgres.dao.xml.ftl")) {
-            return config.getSrcPath() + File.separator + "main" + File.separator
-                + "resources" + File.separator + "sql" + File.separator + "common" + File.separator + moduleName
-                + File.separator + className + "Dao.xml";
-        }
-
-        if (template.contains("menu.sql.vm")) {
-            return className.toLowerCase() + "_menu.sql";
+        if (template.contains(Constant.POSTGRES_XML)) {
+            return config.getSrcPath() + File.separator + "main" + File.separator + "resources" + File.separator + "sql"
+                + File.separator + "common" + File.separator + moduleName + File.separator + className + "Dao.xml";
         }
 
         return null;

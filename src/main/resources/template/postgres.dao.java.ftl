@@ -32,9 +32,7 @@ public interface ${classname}Dao {
 	</#list>
 	* @return　取得レコード　
 	*/
-	${classname}Model selectByPrimaryKey(<#list keycolumns as column>
-	    @Param("${column.attrname}") ${column.javaType} ${column.attrname}<#if column_has_next>,</#if>
-	</#list>);<#lt>
+	${classname}Model selectByPrimaryKey(<#list keycolumns as column>@Param("${column.attrname}") ${column.javaType} ${column.attrname}<#if column_has_next>,</#if></#list>);<#lt>
 	
 	/**
 	 * <pre>
