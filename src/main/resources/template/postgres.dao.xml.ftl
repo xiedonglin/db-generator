@@ -44,7 +44,7 @@
     </trim>
     
     <if test="sortorder != null and sortorder != ''">
-    ORDER BY <#noparse>${</#noparse>sortorder<#noparse>}</#noparse>
+<@format blank="8">ORDER BY <#noparse>${</#noparse>sortorder<#noparse>}</#noparse></@format>
     </if>
     </select>
 
@@ -70,20 +70,28 @@
     INSERT INTO ${tableName}
     <trim prefix="(" suffix=")" suffixOverrides=",">
   	<#list columns as column>
-	<#if seqcolumnName != column.columnName>
-  	<if test="${column.columnName} != null">
-        ${column.columnName},
-    </if>
-    </#if>
+		<#if seqcolumnName != column.columnName>
+			<#if column.columnName == "dtcreatedatetime" || column.columnName == "dtupdatedatetime">
+<@format blank="8">${column.columnName},</@format>
+		  	<#else>
+<@format blank="8"><if test="${column.columnName} != null"></@format>
+<@format blank="12">${column.columnName},</@format>
+<@format blank="8"></if></@format>
+		    </#if>
+	    </#if>
 	</#list>  
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
   	<#list columns as column>
-	<#if seqcolumnName != column.columnName>
-  	<if test="${column.columnName} != null">
-        <#noparse>#{</#noparse>${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse>,
-    </if>
-    </#if>
+		<#if seqcolumnName != column.columnName>
+			<#if column.columnName == "dtcreatedatetime" || column.columnName == "dtupdatedatetime">
+		  		now(),
+		  	<#else>
+			  	<if test="${column.columnName} != null">
+			        <#noparse>#{</#noparse>${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse>,
+			    </if>
+		    </#if>
+	    </#if>
 	</#list>	 	 
     </trim>
     </insert>
@@ -92,22 +100,29 @@
     UPDATE ${tableName}
     <set>
   	<#list columns as column>
-  	<if test="${column.columnName} != null">
-  		<#if column.columnName == 'ihaitacounter'>
-	  		${column.columnName} = <#noparse>#{</#noparse>${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse> + 1,
-  		<#else>
-	  		${column.columnName} = <#noparse>#{</#noparse>${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse>,
-  		</#if>
-    </if>
+		<#if column.columnName == "ccreateuserid" || column.columnName == "dtcreatedatetime">
+	  	<#else>
+			<#if column.columnName == "dtupdatedatetime" >
+		  		${column.columnName} = now(),
+		  	<#else>
+		  		<#if column.columnName == "ihaitacounter">
+			  		ihaitacounter = ihaitacounter + 1,
+		  		<#else>
+				  	<if test="${column.columnName} != null">
+				  		${column.columnName} = <#noparse>#{</#noparse>${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse>,
+				    </if>
+		  		</#if>
+		    </#if>
+	    </#if>
 	</#list>  
     </set>
     <trim prefix="WHERE" prefixOverrides="AND|OR">
 	<#list keycolumns as column>
         AND ${column.columnName} = <#noparse>#{</#noparse>${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse>
 	</#list>
-    <if test="ihaitacounter != null and ihaitacounter != ''">
-        AND ihaitacounter = <#noparse>#{</#noparse>ihaitacounter,jdbcType=DECIMAL<#noparse>}</#noparse> 
-    </if>
+	    <if test="ihaitacounter != null">
+	        AND ihaitacounter = <#noparse>#{</#noparse>ihaitacounter,jdbcType=DECIMAL<#noparse>}</#noparse> 
+	    </if>
     </trim>
     </update>
     
@@ -117,6 +132,9 @@
 	<#list keycolumns as column>
         AND ${column.columnName} = <#noparse>#{</#noparse>${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse>
 	</#list>
+	    <if test="ihaitacounter != null">
+	        AND ihaitacounter = <#noparse>#{</#noparse>ihaitacounter,jdbcType=DECIMAL<#noparse>}</#noparse> 
+	    </if>
     </trim>
     </delete>
  
@@ -137,14 +155,18 @@
     <trim prefix="(" suffix=")" suffixOverrides=",">
 	<#list columns as column>
 		<#if seqcolumnName != column.columnName >
-		${column.attrname},
+			${column.columnName},
 	    </#if>
 	</#list>  
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
 	<#list columns as column>
 		<#if seqcolumnName != column.columnName >
-            <#noparse>#{</#noparse>item.${column.columnName},jdbcType=${column.jdbcType}<#noparse>},</#noparse>
+			<#if column.columnName == "dtcreatedatetime" || column.columnName == "dtupdatedatetime">
+		  		now(),
+		  	<#else>
+	            <#noparse>#{</#noparse>item.${column.columnName},jdbcType=${column.jdbcType}<#noparse>},</#noparse>
+		    </#if>
 	    </#if>
 	</#list>  
     </trim>
@@ -158,11 +180,20 @@
   	<#list columns as column>
   	<if test="item.${column.columnName} != null">
 		<#if seqcolumnName != column.columnName >
-	  		<#if column.columnName == 'ihaitacounter'>
-		  		${column.columnName} = <#noparse>#{</#noparse>item.${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse> + 1,
-	  		<#else>
-		  		${column.columnName} = <#noparse>#{</#noparse>item.${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse>,
-	  		</#if>
+			<#if column.columnName == "ccreateuserid" || column.columnName == "dtcreatedatetime">
+		  	<#else>
+				<#if column.columnName == "dtupdatedatetime" >
+			  		${column.columnName} = now(),
+			  	<#else>
+			  		<#if column.columnName == "ihaitacounter">
+				  		ihaitacounter = ihaitacounter + 1,
+			  		<#else>
+					  	<if test="${column.columnName} != null">
+					  		${column.columnName} = <#noparse>#{</#noparse>${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse>,
+					    </if>
+			  		</#if>
+			    </#if>
+		    </#if>
   		</#if>
     </if>
 	</#list>       	 	 	 	 	 	 	 	 	 	 	 	  	 	 	 	 	 	 	 	 	 	 	 	  	 	 	 	 	 	 	 	 	 	 	 	  	 	 	 	 	 	 	 	 	 	 	 	 

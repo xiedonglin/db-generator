@@ -32,8 +32,19 @@ public interface ${classname}Dao {
 	</#list>
 	* @return　取得レコード　
 	*/
-	${classname}Model selectByPrimaryKey(<#list keycolumns as column>@Param("${column.attrname}") ${column.javaType} ${column.attrname}<#if column_has_next>,</#if></#list>);<#lt>
-	
+	<#if keycolumns?? && (keycolumns?size > 0)>
+	${classname}Model selectByPrimaryKey(
+	<#list keycolumns as column>
+    <#if column_index == 0>
+    <@format blank="4">@Param("${column.attrname}") ${column.javaType} ${column.attrname}<#if column_has_next>,</#if></@format>
+    <#else>
+	@Param("${column.attrname}") ${column.javaType} ${column.attrname}<#if column_has_next>,</#if>
+	</#if>
+	</#list>);
+	<#else>
+	${classname}Model selectByPrimaryKey();
+	</#if>
+		
 	/**
 	 * <pre>
 	 * 検索条件と一致するレコードの取得を行います.

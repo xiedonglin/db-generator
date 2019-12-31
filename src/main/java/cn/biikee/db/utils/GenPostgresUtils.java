@@ -108,7 +108,7 @@ public class GenPostgresUtils {
             configuration.setDefaultEncoding("UTF-8");
             // ftl模板文件
             configuration.setClassForTemplateLoading(GenPostgresUtils.class, "/template/");
-
+            configuration.setSharedVariable(FormatDirective.DIRECTIVE_NAME, new FormatDirective());
             // 获取模板
             Template template = null;
             for (String str : getTemplates()) {
