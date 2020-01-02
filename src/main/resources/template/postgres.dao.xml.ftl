@@ -206,22 +206,4 @@
 <@format blank="8"></if></@format>
     </foreach>
     </update>
- 
-    <delete id="deleteBatchByPrimaryKey" parameterType="java.util.List">
-    DELETE FROM ${tableName}
-    WHERE
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-	<#list keycolumns as column>
-	        ${column.columnName},
-	</#list>
-    </trim>
-    IN
-   <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
-   <trim prefix="(" suffix=")" suffixOverrides=",">
-    <#list keycolumns as column>
-        <#noparse>#{</#noparse>item.${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse>,
-	</#list>    
-    </trim>
-    </foreach>
-    </delete>
 </mapper>

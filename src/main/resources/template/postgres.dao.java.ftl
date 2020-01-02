@@ -1,17 +1,23 @@
 package ${packagename}.dao.${moduleName};
 
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
-
-import com.github.pagehelper.Page;
-import java.util.Date;
-<#list columns as column>
+<#list keycolumns as column>
 	<#if column.javaType == "BigDecimal">
 		import java.math.BigDecimal;<#lt>
 		<#break>
     </#if>
 </#list>
+<#list keycolumns as column>
+	<#if column.javaType == "Date">
+		import java.util.Date;<#lt>
+		<#break>
+    </#if>
+</#list>
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.github.pagehelper.Page;
+
 import ${packagename}.model.${moduleName}.${classname}Model;
 
 /**
@@ -126,17 +132,6 @@ public interface ${classname}Dao {
 	 * @return　処理件数
 	 */
 	int insertBatchSelective(List<${classname}Model> record);
-	
-	/**
-	 * <pre>
-	 * レコード一括物理削除処理を行います.
-	 * </pre>
-	 * 
-	 * @param record
-	 *            削除条件のエンティティ
-	 * @return　処理件数
-	 */
-	int deleteBatchByPrimaryKey(List<${classname}Model> record);
 	
 	/**
 	 * <pre>

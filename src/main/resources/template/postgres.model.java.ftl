@@ -1,13 +1,18 @@
 package ${packagename}.model.${moduleName};
 
-import java.util.Date;
-
 <#list columns as column>
 	<#if column.javaType == "BigDecimal">
 		import java.math.BigDecimal;<#lt>
 		<#break>
     </#if>
 </#list>
+<#list columns as column>
+	<#if column.javaType == "Date">
+		import java.util.Date;<#lt>
+		<#break>
+    </#if>
+</#list>
+
 import ${packagename}.annotation.PrimaryKey;
 import ${packagename}.model.BaseModel;
 
