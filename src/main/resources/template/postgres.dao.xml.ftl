@@ -22,24 +22,24 @@
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="map">
-    SELECT 
-        <include refid="Base_Column_List" />
-    FROM ${tableName}
-    WHERE 
+<@format blank="8">SELECT</@format>
+<@format blank="12"><include refid="Base_Column_List" /></@format>
+<@format blank="8">FROM ${tableName}</@format>
+<@format blank="8">WHERE</@format>
 	<#list keycolumns as column>
-    <#if column_index != 0 >AND </#if>${column.columnName} = <#noparse>#{</#noparse>${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse>
+<@format blank="12"><#if column_index != 0 >AND </#if>${column.columnName} = <#noparse>#{</#noparse>${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse></@format>
 	</#list>
     </select>
     
     <select id="selectByModel" resultMap="BaseResultMap" parameterType="${packagename}.model.${moduleName}.${classname}Model">
-    SELECT 
-        <include refid="Base_Column_List" />
-    FROM ${tableName}
+<@format blank="8">SELECT</@format>
+<@format blank="12"><include refid="Base_Column_List" /></@format>
+<@format blank="8">FROM ${tableName}</@format>
     <trim prefix="WHERE" prefixOverrides="AND|OR">
   	<#list columns as column>
-  	<if test="${column.columnName} != null">
-        AND ${column.columnName} = <#noparse>#{</#noparse>${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse>
-    </if>
+<@format blank="8"><if test="${column.columnName} != null"></@format>
+<@format blank="12">AND ${column.columnName} = <#noparse>#{</#noparse>${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse></@format>
+<@format blank="8"></if></@format>
 	</#list>
     </trim>
     
@@ -54,9 +54,9 @@
     FROM ${tableName}
     <trim prefix="WHERE" prefixOverrides="AND|OR">
   	<#list columns as column>
-  	<if test="${column.columnName} != null">
-        AND ${column.columnName} = <#noparse>#{</#noparse>${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse>
-    </if>
+<@format blank="8"><if test="${column.columnName} != null"></@format>
+<@format blank="12">AND ${column.columnName} = <#noparse>#{</#noparse>${column.columnName},jdbcType=${column.jdbcType}<#noparse>}</#noparse></@format>
+<@format blank="8"></if></@format>
 	</#list>
     </trim>
     </select>
@@ -150,7 +150,6 @@
     </delete>	 	 	 	 	 
 	 	 	 	 
     <insert id="insertBatchSelective" parameterType="java.util.List" useGeneratedKeys="false">
-    <foreach collection="list" item="item" index="index" separator=";">
     INSERT INTO ${tableName}
     <trim prefix="(" suffix=")" suffixOverrides=",">
 	<#list columns as column>
@@ -159,7 +158,9 @@
 	    </#if>
 	</#list>  
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
+    VALUES
+    <foreach collection="list" item="item" index="index" separator=",">
+    <trim prefix="(" suffix=")" suffixOverrides=",">
 	<#list columns as column>
 		<#if seqcolumnName != column.columnName >
 			<#if column.columnName == "dtcreatedatetime" || column.columnName == "dtupdatedatetime">
