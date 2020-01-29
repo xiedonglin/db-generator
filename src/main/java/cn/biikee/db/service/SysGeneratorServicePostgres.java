@@ -100,6 +100,28 @@ public class SysGeneratorServicePostgres {
             // 关闭流
             out.flush();
             out.close();
+            
+            // 获取模板
+            template = configuration.getTemplate(Constant.POSTGRES_BASEANNO);
+            // 输出文件
+            outFile = new File(getFileName(Constant.POSTGRES_BASEANNO, "",
+                cfg.getPackagename(), ""));
+            // 如果输出目标文件夹不存在，则创建
+            if (!outFile.getParentFile().exists()) {
+                outFile.getParentFile().mkdirs();
+            }
+           
+            out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile), StandardCharsets.UTF_8));
+            // 生成文件
+            try {
+                template.process(map, out);
+            } catch (TemplateException e) {
+                e.printStackTrace();
+            }
+            // 关闭流
+            out.flush();
+            out.close();            
+            
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -294,6 +316,10 @@ public class SysGeneratorServicePostgres {
             packagePath += packageName.replace(".", File.separator) + File.separator;
         }
 
+        if (template.contains(Constant.POSTGRES_BASEANNO)) {
+            return packagePath + "annotation" + File.separator + "PrimaryKey.java";
+        }
+        
         if (template.contains(Constant.POSTGRES_BASEMOD)) {
             return packagePath + "model" + File.separator + "BaseModel.java";
         }
