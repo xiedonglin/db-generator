@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 
 import cn.biikee.db.service.SysGeneratorServicePostgres;
+import cn.biikee.db.utils.Constant;
 import cn.biikee.db.utils.PageUtils;
 import cn.biikee.db.utils.Query;
 import cn.biikee.db.utils.R;
@@ -42,6 +43,7 @@ public class SysGeneratorControllerPostgres {
 	@RequestMapping("/list")
 	public R list(@RequestParam Map<String, Object> params){
 		//查询列表数据
+	    params.put("schemaName", Constant.POSTGRES_SCHEMA);
 		Query query = new Query(params);
 		List<Map<String, Object>> list = sysGeneratorService.queryList(query);
 		int total = sysGeneratorService.queryTotal(query);

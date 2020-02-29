@@ -16,5 +16,5 @@ public class Constant {
     public static final String POSTGRES_BASEMOD = "postgres.dao.java.BaseModel.ftl";
     public static final String POSTGRES_BASEANNO = "postgres.dao.java.annotation.ftl";
     public static final String POSTGRES_MOD = "postgres.model.java.ftl";
-
+    public static final String POSTGRES_SCHEMA = "public4651";
 }
