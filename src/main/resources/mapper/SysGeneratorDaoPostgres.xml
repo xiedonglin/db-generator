@@ -76,6 +76,7 @@
 	FROM pg_class 
 	inner join pg_namespace on pg_namespace.oid = pg_class.relnamespace and pg_namespace.nspname = 'public'
 	WHERE pg_class.relkind = 'S'
+	and substring(pg_class.relname,length(#{tablename,jdbcType=VARCHAR})　+　1,1) = '_'
 	and strpos(pg_class.relname,#{tablename,jdbcType=VARCHAR}) > 0
 	</select>
 </mapper>
